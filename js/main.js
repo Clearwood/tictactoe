@@ -12,8 +12,8 @@ var gameData = {
 var isOver = false; // see whether game is ended
 var size = 3; //3x3 grid default
 var turns = 0;
-var toggle = true;
-var modeAI = false; // default AI mode off
+var toggle = false;
+var modeAI = true; // default AI mode off
 
 var compMoves;
 var boardCheck;
@@ -47,11 +47,6 @@ $(document).ready(function() {
       size = JSON.parse(localStorage.getItem('size'));
       modeAI = JSON.parse(localStorage.getItem('modeAI'));
       toggle = JSON.parse(localStorage.getItem('toggle'));
-
-      if(modeAI) {
-        $(".icon").toggle();
-        $(".name").toggle();
-      }
 
       if(gameData.token1 === 'nigiri') {
         $("#tokenPair1").removeClass("selected");
@@ -99,7 +94,7 @@ $(document).ready(function() {
     turns = 0;
     isOver = false;
     $("td").removeClass(gameData.token1).removeClass(gameData.token2);
-    $("#message").text("Let's play the game! Player1 first.")
+   $("#message").text("Let's play the game! Player1 first.")
   };
 
   $("#restart").on("click", function() {
@@ -134,9 +129,6 @@ $(document).ready(function() {
 //===================================toggle 3x3 or 4x4 game board============================
   // $("#grid4").hide();
   $("#changeSize").click(function() {
-    if (modeAI) {
-      return;
-    }
     $("#grid4").slideToggle("fast");
     $("#grid3").slideToggle("fast");
     restart();
@@ -153,111 +145,7 @@ $(document).ready(function() {
     return false;
   }); // toggle board size
 //================================toggle AI mode=================================================
-  $("#toggleAI").click(function() {
-    if (turns) {
-      return;
-    }
-    $(".icon").toggle();
-    $(".name").toggle();
-    gameData.score1 = 0;
-    $("#player1 .num").text('' + gameData.score1);
-    gameData.score2 = 0;
-    $("#player2 .num").text('' + gameData.score2);
 
-    modeAI = !modeAI;
-    saveGame();
-  });
-
-  $("#newgame").on("click", function() {
-    gameData.score1 = 0;
-    gameData.score2 = 0;
-    restart();
-    saveGame();
-  });
-    // if (!modeAI) {
-    // when player clicks squares to play!!!!
-    $("td").on("click", function() {
-
-      if(modeAI === true){
-        return;
-      }
-      if (isOver) {
-        return;
-      } // if game is ended, clicks become invalid
-
-      var token1 = gameData.token1;
-      var token2 = gameData.token2;
-
-      var marked = $(this); // get the square that player selects
-
-      if (marked.hasClass(token1) || marked.hasClass(token2)) {
-        // if the square has already been selected then alert else markes the square
-        alert("Please choose another square!")
-        return;
-      }
-
-      // first see which turn
-      if (turns % 2 === 0) {
-        // $("#player1 .name").addClass("changecolor");
-        // $("#player2 .name").removeClass("changecolor");
-
-        $("#message").text("It's Player1's turn!"); // change the prompt message
-
-        marked.addClass(token1).addClass("animated bounceIn"); // place the token "X"
-        gameData.movesP1.push(this.id); // store the sqaure id to an array
-
-        turns++; //player2's turn
-
-        if ( checkWin(gameData.movesP1, size) ) {
-          $("#message").text("Player1 wins!")
-          isOver = true; // game is ended
-          gameData.score1 += 1;
-          $("#player1 .num").text('' + gameData.score1);
-          saveGame();
-
-        } else {
-
-          if ( turns === size ** 2 ) {
-            $("#message").text("It's a draw!")
-            isOver = true;
-            saveGame();
-            return;
-          } // players reach the last turn and not winning, it's a draw
-
-          $("#message").text("It's Player2's turn!")
-          saveGame();
-          //normally switch to player O and change prompt message
-        }
-
-      } else {
-        $("#message").text("It's Players's turn!")
-        marked.addClass(token2).addClass("animated bounceIn");
-        gameData.movesP2.push(this.id);
-
-        turns++;
-
-        if ( checkWin(gameData.movesP2, size) ) {
-          $("#message").text("Player2 wins!")
-          isOver = true;
-          gameData.score2 += 1;
-          $("#player2 .num").text('' + gameData.score2);
-          saveGame();
-
-        } else {
-
-          if ( turns === size ** 2 ) {
-            $("#message").text("It's a draw!")
-            isOver = true;
-            saveGame();
-            return;
-          }
-
-          $("#message").text("It's Player1's turn!")
-          saveGame();
-        }
-      }
-
-    }); // all the moves ---> not AI mode
 
   //==================================AI mode on======================================
     // all the moves ---> AI mode
